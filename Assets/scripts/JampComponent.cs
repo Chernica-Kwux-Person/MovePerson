@@ -7,7 +7,8 @@ public class JampComponent : MonoBehaviour
     [SerializeField] private float TopJamp = 20.0f;
     [SerializeField] private KeyCode JampKey = KeyCode.Space;
     //[SerializeField] private float mass;
-    //public RaningComponrnt Raning;
+    [SerializeField] private float graund = 0.5f;
+    [SerializeField] private bool space = false;
 
     void Start()
     {
@@ -15,16 +16,39 @@ public class JampComponent : MonoBehaviour
         //mass = rb.mass;
     }
 
-
     void Update()
+    {
+        if (Input.GetKeyDown(JampKey))
+        {
+            space = true;
+        }
+
+
+    }
+
+    private void OnCollisionStay(Collision collision)
     {
 
         
+        Vector3 velocity = rb.linearVelocity;
+
         //Vector3 momentum = Raning.directionAlongSurface;
 
-        if (Input.GetKeyDown(JampKey))
+        
+        foreach (ContactPoint contact in collision.contacts)
         {
-            rb.AddForce(Vector3.up * TopJamp, ForceMode.Impulse );//
+            
+            if (Vector3.Dot(contact.normal, Vector3.up) > graund)
+            {
+                
+                if (space)
+                {
+                    //velocity.y = 0;
+                    //rb.AddForce(velocity, ForceMode.VelocityChange);
+                    rb.AddForce(Vector3.up * TopJamp, ForceMode.Impulse);//
+                    space = false;
+                }
+            }
         }
     }
 }

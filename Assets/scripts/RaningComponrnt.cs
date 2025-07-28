@@ -12,13 +12,19 @@ public class RaningComponrnt : MonoBehaviour
     [SerializeField] private float moveSpeed = 20.0f;
     [SerializeField] private bool isGrounded = false;
 
+    [SerializeField] private KeyCode JampKey = KeyCode.Space;
+
     private Rigidbody rb; // Физическое тело объекта
     private float moveHorizontal; // Горизонтальный ввод игрока (A/D, стрелки)
     private float moveVertical;   // Вертикальный ввод игрока (W/S, стрелки)
     private int flag; // Переменная не используется, возможно заготовка для логики
     private Vector3 camRight;     // Правая сторона камеры (не используется)
     private Vector3 camForward;   // Перед камеры (не используется)
+    private bool tim;
+    Vector3 VectorRaning;
+    [SerializeField] private bool space = false;
     
+
     // Имена осей ввода
     const string controlHorizontal = "Horizontal";
     const string controlVertical = "Vertical";
@@ -33,27 +39,46 @@ public class RaningComponrnt : MonoBehaviour
 
     void Update()
     {
+        //Debug.Log("111111111111111111111111");
         // Считываем ввод от игрока по осям
         moveHorizontal = Input.GetAxisRaw(controlHorizontal);
         moveVertical = Input.GetAxisRaw(controlVertical);
+        
+        if (Input.GetKeyDown(JampKey))
+        {
+            space = true;
+        }
+        
+        
+        
     }
 
     void FixedUpdate()
     {
-
         if (isGrounded)
         {
             // Получаем направление движения на основе камеры и ввода
             Vector3 camGO1forvard = moveHorizontal * camera.right;   // движение вправо/влево относительно камеры
             Vector3 camGO2forvard = moveVertical * camera.forward;   // движение вперёд/назад относительно камеры
-            Vector3 VectorRaning = camGO1forvard + camGO2forvard;    // итоговое направление движения
-
+            VectorRaning = camGO1forvard + camGO2forvard;    // итоговое направление движения
+            //Debug.Log("00000000000000000000000");
             // Выполняем перемещение
+            
+            if (space)
+            {
+                
+                return;
+            }
+            
             Move(VectorRaning);
 
-            // Альтернатива с прямым смещением (закомментирована):
-            // rb.MovePosition(rb.position + VectorRaning * moveSpeed * Time.deltaTime);
+            // Альтернатива с прямым смещением (закомментирована):                                   Мб весь этот блок в OnCollisionStay?????
+            // rb.MovePosition(rb.position + VectorRaning * moveSpeed * Time.deltaTime);             Мб весь этот блок в OnCollisionStay?????      этот if из FixedUpdate
         }
+    
+
+        
+        
     }
 
     // Проекция вектора на плоскость, перпендикулярную нормали
@@ -68,6 +93,7 @@ public class RaningComponrnt : MonoBehaviour
         // При столкновении сохраняем нормаль поверхности, на которой стоит персонаж
         foreach (ContactPoint contact in collision.contacts)
         {
+            //Debug.Log("00000000000000000000000");
             // Проверяем, направлена ли нормаль вверх — значит, это "земля"
             if (Vector3.Dot(contact.normal, Vector3.up) > 0.5f)
             {
@@ -77,6 +103,12 @@ public class RaningComponrnt : MonoBehaviour
             }
             
         }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        // Когда персонаж перестает касаться поверхности — снимаем флаг
+        space = false;
     }
 
     private void OnCollisionExit(Collision collision)
@@ -103,10 +135,17 @@ public class RaningComponrnt : MonoBehaviour
         // Проецируем направление на плоскость поверхности, чтобы двигаться по склонам
         Vector3 directionAlongSurface = Project(direction.normalized);
         
-        // Смещение на кадр с учётом скорости и времени
-        Vector3 offset = directionAlongSurface * (moveSpeed * Time.deltaTime);
-
+        
+        Vector3 offset = directionAlongSurface * moveSpeed;
+        offset = offset - rb.linearVelocity;
+        //offset.y = 0;
+        Debug.Log(offset.y);
+        Debug.DrawLine(transform.position, transform.position + offset * 20.0f, Color.red);
         // Смещаем Rigidbody
-        rb.MovePosition(rb.position + offset);
+        
+        
+
+        rb.AddForce(offset, ForceMode.VelocityChange);
+        
     }
 }
