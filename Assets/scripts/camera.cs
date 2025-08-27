@@ -3,7 +3,7 @@ using UnityEngine;
 public class camera : MonoBehaviour
 {
     public Transform target;
-    [SerializeField] private float distance = 5.0f;
+    [SerializeField] private float distance = 0.0f;
     [SerializeField] private float distanceVert = 2.0f;
     [SerializeField] private float RotationSpeed = 5.0f;
 

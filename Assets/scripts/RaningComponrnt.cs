@@ -9,10 +9,17 @@ public class RaningComponrnt : MonoBehaviour
     [SerializeField] private float RotationSpeed = 5.0f;
 
     // Скорость движения персонажа
-    [SerializeField] private float moveSpeed = 20.0f;
+    [SerializeField] private float moveSpeed = 10.0f;
+
+    [SerializeField] private float moveSpeedFlay = 5.0f;
     [SerializeField] private bool isGrounded = false;
 
     [SerializeField] private KeyCode JampKey = KeyCode.Space;
+
+    [SerializeField] private Rigidbody car;
+
+    private Vector3 carSpead = Vector3.zero;
+
 
     private Rigidbody rb; // Физическое тело объекта
     private float moveHorizontal; // Горизонтальный ввод игрока (A/D, стрелки)
@@ -20,6 +27,7 @@ public class RaningComponrnt : MonoBehaviour
     private int flag; // Переменная не используется, возможно заготовка для логики
     private Vector3 camRight;     // Правая сторона камеры (не используется)
     private Vector3 camForward;   // Перед камеры (не используется)
+    private Vector3 lastMove = Vector3.zero;
     private bool tim;
     Vector3 VectorRaning;
     [SerializeField] private bool space = false;
@@ -55,25 +63,34 @@ public class RaningComponrnt : MonoBehaviour
 
     void FixedUpdate()
     {
+
+        
         if (isGrounded)
         {
             // Получаем направление движения на основе камеры и ввода
             Vector3 camGO1forvard = moveHorizontal * camera.right;   // движение вправо/влево относительно камеры
             Vector3 camGO2forvard = moveVertical * camera.forward;   // движение вперёд/назад относительно камеры
             VectorRaning = camGO1forvard + camGO2forvard;    // итоговое направление движения
-            //Debug.Log("00000000000000000000000");
+            
             // Выполняем перемещение
             
             if (space)
             {
-                
                 return;
             }
+            //Debug.Log("Не летим");
+            Move(VectorRaning, carSpead);
             
-            Move(VectorRaning);
-
             // Альтернатива с прямым смещением (закомментирована):                                   Мб весь этот блок в OnCollisionStay?????
             // rb.MovePosition(rb.position + VectorRaning * moveSpeed * Time.deltaTime);             Мб весь этот блок в OnCollisionStay?????      этот if из FixedUpdate
+        }
+        else
+        {
+            //Debug.Log("ЛЛЛЛЛЛЛЛЛетим");
+            Vector3 camGO1forvard = moveHorizontal * camera.right;   // движение вправо/влево относительно камеры
+            Vector3 camGO2forvard = moveVertical * camera.forward;   // движение вперёд/назад относительно камеры
+            VectorRaning = camGO1forvard + camGO2forvard;    // итоговое направление движения
+            MoveFlay(VectorRaning);
         }
     
 
@@ -93,6 +110,19 @@ public class RaningComponrnt : MonoBehaviour
         // При столкновении сохраняем нормаль поверхности, на которой стоит персонаж
         foreach (ContactPoint contact in collision.contacts)
         {
+            if (collision.rigidbody != null)
+            {
+                //Debug.Log("Ква");
+                car = collision.rigidbody;
+                //Debug.Log("Все еще ква");
+                carSpead = car.linearVelocity;
+                Debug.Log(carSpead);
+                
+            }
+            else
+            {
+                carSpead = Vector3.zero;
+            }
             //Debug.Log("00000000000000000000000");
             // Проверяем, направлена ли нормаль вверх — значит, это "земля"
             if (Vector3.Dot(contact.normal, Vector3.up) > 0.5f)
@@ -129,23 +159,52 @@ public class RaningComponrnt : MonoBehaviour
         Gizmos.DrawLine(transform.position, transform.position + Project(transform.forward));
     }
 
+    private void MoveFlay(Vector3 direction)
+    {
+        //Vector3 directionAlongSurface = Project(direction.normalized);
+        Vector3 offset = direction * moveSpeedFlay;
+        offset = offset - rb.linearVelocity;
+        offset.y = 0;
+        
+        //Vector3 x = rb.linearVelocity;
+        //x.y = 0;
+        //Debug.Log("fdmdfgj");
+        rb.AddForce(offset);
+    }
+
+
+
+
+
+
+
     // Метод движения по поверхности
-    private void Move(Vector3 direction)
+    private void Move(Vector3 direction, Vector3 carSp)
     {
         // Проецируем направление на плоскость поверхности, чтобы двигаться по склонам
         Vector3 directionAlongSurface = Project(direction.normalized);
         
         
         Vector3 offset = directionAlongSurface * moveSpeed;
-        offset = offset - rb.linearVelocity;
+
+        // if (carSp != Vector3.zero)
+        // {
+        offset = offset - rb.linearVelocity + carSp;
+        // }
+        // else
+        // {
+        //     offset = offset - rb.linearVelocity;
+        // }
         //offset.y = 0;
-        Debug.Log(offset.y);
+        //Debug.Log(offset.y);
+        Debug.Log(carSp);
+        
         Debug.DrawLine(transform.position, transform.position + offset * 20.0f, Color.red);
         // Смещаем Rigidbody
         
         
-
-        rb.AddForce(offset, ForceMode.VelocityChange);
         
+        rb.AddForce(offset, ForceMode.VelocityChange);
+        //lastMove = rb.linearVelocity;
     }
 }

@@ -10,6 +10,8 @@ public class JampComponent : MonoBehaviour
     [SerializeField] private float graund = 0.5f;
     [SerializeField] private bool space = false;
 
+    
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -45,7 +47,9 @@ public class JampComponent : MonoBehaviour
                 {
                     //velocity.y = 0;
                     //rb.AddForce(velocity, ForceMode.VelocityChange);
-                    rb.AddForce(Vector3.up * TopJamp, ForceMode.Impulse);//
+                    Vector3 run = rb.linearVelocity;
+                    run.y = 0;
+                    rb.AddForce(Vector3.up * TopJamp + run, ForceMode.Impulse);//
                     space = false;
                 }
             }
