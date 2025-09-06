@@ -594,8 +594,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 2101014609}
-  distance: 0.1
-  distanceVert: 1
+  distance: 5
+  distanceVert: 2
   RotationSpeed: 5
   pitchLimits: {x: -30, y: 60}
   pitch: 0
@@ -2654,8 +2654,9 @@ GameObject:
   - component: {fileID: 2101014607}
   - component: {fileID: 2101014606}
   - component: {fileID: 2101014610}
-  - component: {fileID: 2101014611}
-  - component: {fileID: 2101014612}
+  - component: {fileID: 2101014613}
+  - component: {fileID: 2101014615}
+  - component: {fileID: 2101014614}
   m_Layer: 0
   m_Name: Capsule
   m_TagString: Untagged
@@ -2748,7 +2749,7 @@ Transform:
   m_GameObject: {fileID: 2101014605}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.05, y: 4.37, z: -1.75}
+  m_LocalPosition: {x: 4.12, y: 4.3, z: -1.89}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2777,12 +2778,12 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
---- !u!114 &2101014611
+--- !u!114 &2101014613
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2791,33 +2792,47 @@ MonoBehaviour:
   m_GameObject: {fileID: 2101014605}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 680c2b60091c4c6408845ac169a8460a, type: 3}
+  m_Script: {fileID: 11500000, guid: 2a17a4b2cbfd5a244959de50e9096168, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _state: 0
+  countCollision: 0
+--- !u!114 &2101014614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2101014605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13b3065d343150546be83beb953e6724, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveHorizontal: 0
+  moveVertical: 0
+  JampKey: 32
+--- !u!114 &2101014615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2101014605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e2a4b58abffffd459e606481d26be4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   camera: {fileID: 937341796}
   RotationSpeed: 5
   moveSpeed: 10
-  moveSpeedFlay: 5
-  isGrounded: 0
-  JampKey: 32
-  car: {fileID: 0}
-  space: 0
---- !u!114 &2101014612
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2101014605}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88c1cf9fa56372b47a8718725fefe51e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  moveSpeedFlay: 0.05
   TopJamp: 10
-  JampKey: 32
-  graund: 0.5
-  space: 0
+  isGrounded: 0
+  car: {fileID: 0}
+  strongGraviti: 0.1
+  strongJamp: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

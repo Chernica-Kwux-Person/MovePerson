@@ -25,7 +25,6 @@ public class JampComponent : MonoBehaviour
             space = true;
         }
 
-
     }
 
     private void OnCollisionStay(Collision collision)
@@ -49,7 +48,7 @@ public class JampComponent : MonoBehaviour
                     //rb.AddForce(velocity, ForceMode.VelocityChange);
                     Vector3 run = rb.linearVelocity;
                     run.y = 0;
-                    rb.AddForce(Vector3.up * TopJamp + run, ForceMode.Impulse);//
+                    rb.AddForce(Vector3.up * TopJamp, ForceMode.Impulse);//
                     space = false;
                 }
             }

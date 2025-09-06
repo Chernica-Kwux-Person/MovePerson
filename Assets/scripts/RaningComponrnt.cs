@@ -137,7 +137,7 @@ public class RaningComponrnt : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        // Когда персонаж перестает касаться поверхности — снимаем флаг
+        
         space = false;
     }
 
@@ -171,13 +171,6 @@ public class RaningComponrnt : MonoBehaviour
         //Debug.Log("fdmdfgj");
         rb.AddForce(offset);
     }
-
-
-
-
-
-
-
     // Метод движения по поверхности
     private void Move(Vector3 direction, Vector3 carSp)
     {
