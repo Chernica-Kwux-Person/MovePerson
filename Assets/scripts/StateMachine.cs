@@ -45,12 +45,16 @@ public class StateMachine : MonoBehaviour
         {
             state = state | PlayerStatus.Fall;
         }
-        Debug.Log("Итоговое состояние" + state);
+        //Debug.Log("Итоговое состояние" + state);
     }
 
     void FixedUpdate()
     {
-        if (countCollision >= 0)
+        if (countCollision > 0)
+        {
+            state = state | PlayerStatus.isGrounded;
+        }
+        else
         {
             state &= ~PlayerStatus.isGrounded;
         }
@@ -73,7 +77,7 @@ public class StateMachine : MonoBehaviour
 
         if (Vector3.Dot(contact.normal, Vector3.up) > 0.5f)
         {
-            state = state | PlayerStatus.isGrounded;
+            
             countCollision += 1;
         }
         

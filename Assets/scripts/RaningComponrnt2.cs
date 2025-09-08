@@ -49,6 +49,8 @@ public class RaningComponrnt2 : MonoBehaviour
 
     float moveY;
 
+    [SerializeField] private bool jampStart = false;
+
     void Start()
     {
         moveY = strongGraviti;
@@ -92,14 +94,14 @@ public class RaningComponrnt2 : MonoBehaviour
         return forward - Vector3.Dot(forward, _normal) * _normal;
     }
 
-    public void Move(float moveHorizontal, float moveVertical, bool JampI)
+    public void Move(float moveHorizontal, float moveVertical)
     {
         // Получаем направление движения на основе камеры и ввода
         Vector3 camGO1forvard = moveHorizontal * camera.right;   // движение вправо/влево относительно камеры
         Vector3 camGO2forvard = moveVertical * camera.forward;   // движение вперёд/назад относительно камеры
         VectorRaning = camGO1forvard + camGO2forvard;    // итоговое направление движения
-        //Debug.Log("Пришли");
-        if (StateMachine.state.HasFlag(PlayerStatus.isGrounded) & JampI == false)
+        Debug.Log(StateMachine.state);
+        if (StateMachine.state.HasFlag(PlayerStatus.isGrounded) & jampStart == false)
         {
             // Проецируем направление на плоскость поверхности, чтобы двигаться по склонам
             Vector3 directionAlongSurface = Project(VectorRaning.normalized);
@@ -114,11 +116,12 @@ public class RaningComponrnt2 : MonoBehaviour
 
             //Debug.Log("Зашли");
         }
-        else if (StateMachine.state.HasFlag(PlayerStatus.Fall) || JampI)
+        else if (StateMachine.state.HasFlag(PlayerStatus.Fall) || (jampStart & StateMachine.state.HasFlag(PlayerStatus.isGrounded)))
         {
-            Vector3 vectorY = new Vector3 (0, moveY, 0);
+            Vector3 vectorY = new Vector3(0, moveY, 0);
             offset = offset + VectorRaning * moveSpeedFlay + vectorY;
             moveY -= strongGraviti;
+            jampStart = false;
         }
     }
 
@@ -127,6 +130,7 @@ public class RaningComponrnt2 : MonoBehaviour
         if (StateMachine.state.HasFlag(PlayerStatus.isGrounded))
         {
             moveY = strongJamp;
+            jampStart = true;
         }
     }
 

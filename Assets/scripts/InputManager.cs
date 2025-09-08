@@ -40,7 +40,7 @@ public class InputManager : MonoBehaviour
         {
             RaningC.Jamp();
         }
-        RaningC.Move(moveHorizontal, moveVertical, JampI);
+        RaningC.Move(moveHorizontal, moveVertical);
         if (JampI)
         {
             JampI = false;

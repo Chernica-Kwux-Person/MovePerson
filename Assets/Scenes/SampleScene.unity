@@ -2749,7 +2749,7 @@ Transform:
   m_GameObject: {fileID: 2101014605}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.12, y: 4.3, z: -1.89}
+  m_LocalPosition: {x: 8.84, y: 5.19, z: -2.27}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2827,12 +2827,13 @@ MonoBehaviour:
   camera: {fileID: 937341796}
   RotationSpeed: 5
   moveSpeed: 10
-  moveSpeedFlay: 0.05
+  moveSpeedFlay: 0.2
   TopJamp: 10
   isGrounded: 0
   car: {fileID: 0}
   strongGraviti: 0.1
   strongJamp: 1
+  jampStart: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
