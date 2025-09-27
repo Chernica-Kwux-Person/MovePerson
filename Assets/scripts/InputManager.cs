@@ -11,10 +11,15 @@ public class InputManager : MonoBehaviour
 
     private RaningComponrnt2 RaningC;
 
+    [SerializeField] private Doun Doun;
+
 
     [SerializeField] private KeyCode JampKey = KeyCode.Space;
 
+    [SerializeField] private KeyCode fall = KeyCode.X;
+
     private bool JampI; 
+    private bool Down;
 
     void Start()
     {
@@ -32,6 +37,11 @@ public class InputManager : MonoBehaviour
         {
             JampI = true;
         }
+
+        if (Input.GetKey(fall))
+        {
+            Down = true;
+        }
     }
 
     void FixedUpdate()
@@ -44,6 +54,11 @@ public class InputManager : MonoBehaviour
         if (JampI)
         {
             JampI = false;
+        }
+        if (Down)
+        {
+            Doun.DownMove();
+            Down = false;
         }
     }
 }

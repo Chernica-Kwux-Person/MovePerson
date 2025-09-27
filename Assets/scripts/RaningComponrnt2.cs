@@ -18,7 +18,7 @@ public class RaningComponrnt2 : MonoBehaviour
     [SerializeField] private float TopJamp = 20.0f;
     [SerializeField] private bool isGrounded = false;
 
-    
+
 
     [SerializeField] private Rigidbody car;
 
@@ -31,10 +31,11 @@ public class RaningComponrnt2 : MonoBehaviour
     private Vector3 lastMove = Vector3.zero;
     private bool tim;
     Vector3 VectorRaning;
-     private bool space = false;
+    private bool space = false;
 
 
     private Vector3 _normal; // Нормаль поверхности, на которой стоит персонаж
+    private Vector3 _normalSliding; // Нормаль поверхности, на которой стоит персонаж
 
     private StateMachine StateMachine;
 
@@ -51,6 +52,10 @@ public class RaningComponrnt2 : MonoBehaviour
 
     [SerializeField] private bool jampStart = false;
 
+    [SerializeField]
+    int countCollision = 0;
+    int countCollisionSliding = 0;
+
     void Start()
     {
         moveY = strongGraviti;
@@ -60,17 +65,79 @@ public class RaningComponrnt2 : MonoBehaviour
         rb.freezeRotation = true;       // Запрещаем физическую ротацию объекта
     }
 
+
+    void Update()
+    {
+
+        if (StateMachine.state.HasFlag(PlayerStatus.isGrounded))
+        {
+            StateMachine.state &= ~PlayerStatus.Fall;
+        }
+        else
+        {
+            StateMachine.state = StateMachine.state | PlayerStatus.Fall;
+        }
+        //Debug.Log("Итоговое состояние" + state);
+    }
+
     void FixedUpdate()
     {
         rbVelocity = rb.linearVelocity;
         rb.AddForce(offset - rbVelocity, ForceMode.VelocityChange);
+        Debug.DrawLine(transform.position, transform.position + offset * 20.0f, Color.red);
+
+        if (countCollision > 0)
+        {
+            StateMachine.state = StateMachine.state | PlayerStatus.isGrounded;
+        }
+        else
+        {
+            StateMachine.state &= ~PlayerStatus.isGrounded;
+        }
+        countCollision = 0;
+
+        if (countCollisionSliding > 0)
+        {
+            StateMachine.state = StateMachine.state | PlayerStatus.Sliding;
+        }
+        else
+        {
+            StateMachine.state &= ~PlayerStatus.Sliding;
+        }
+        countCollision = 0;
     }
 
 
     private void OnCollisionStay(Collision collision)
     {
+        countCollisionSliding = 0;
         cerVel = carSpead(collision.rigidbody);
+        _normal = Vector3.zero;
+        foreach (ContactPoint contact in collision.contacts)
+        {
+            GroundChek(contact);
+        }
+        _normal /= countCollision;
+        _normal.Normalize();
+        _normalSliding /= countCollisionSliding;
+        _normalSliding.Normalize();
+    }
 
+    private void GroundChek(ContactPoint contact)
+    {
+
+        if (Vector3.Dot(contact.normal, Vector3.up) > 0.5f)
+        {
+
+            countCollision += 1;
+            _normal += contact.normal;
+        }
+        else
+        {
+            countCollisionSliding += 1;
+            _normalSliding += contact.normal;
+            
+        }
     }
 
     private Vector3 carSpead(Rigidbody collisionRB)
@@ -89,9 +156,11 @@ public class RaningComponrnt2 : MonoBehaviour
 
 
     // Проекция вектора на плоскость, перпендикулярную нормали
-    private Vector3 Project(Vector3 forward)
+    private Vector3 Project(Vector3 forward, Vector3 norm)
     {
-        return forward - Vector3.Dot(forward, _normal) * _normal;
+        Debug.Log(norm);
+        return forward - Vector3.Dot(forward, norm) * norm;
+
     }
 
     public void Move(float moveHorizontal, float moveVertical)
@@ -100,17 +169,18 @@ public class RaningComponrnt2 : MonoBehaviour
         Vector3 camGO1forvard = moveHorizontal * camera.right;   // движение вправо/влево относительно камеры
         Vector3 camGO2forvard = moveVertical * camera.forward;   // движение вперёд/назад относительно камеры
         VectorRaning = camGO1forvard + camGO2forvard;    // итоговое направление движения
+
         Debug.Log(StateMachine.state);
         if (StateMachine.state.HasFlag(PlayerStatus.isGrounded) & jampStart == false)
         {
             // Проецируем направление на плоскость поверхности, чтобы двигаться по склонам
-            Vector3 directionAlongSurface = Project(VectorRaning.normalized);
+            Vector3 directionAlongSurface = Project(VectorRaning.normalized, _normal);
             Vector3 sped = directionAlongSurface * moveSpeed;
 
             offset = sped + cerVel;
             Debug.Log(cerVel);
 
-            Debug.DrawLine(transform.position, transform.position + offset * 20.0f, Color.red);
+            Debug.DrawLine(transform.position, transform.position + _normal * 20.0f, Color.red);
             // Смещаем Rigidbody
 
 
@@ -123,6 +193,13 @@ public class RaningComponrnt2 : MonoBehaviour
             moveY -= strongGraviti;
             jampStart = false;
         }
+        /*
+        if (StateMachine.state.HasFlag(PlayerStatus.Sliding))
+        {
+            Vector3 slising = Project(offset, _normalSliding);
+            offset = slising;
+        }
+        */
     }
 
     public void Jamp()
